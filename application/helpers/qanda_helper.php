@@ -4816,10 +4816,12 @@ function do_array_multiflexi($ia)
     $aQuestions     = $lresult->readAll();
     $labelans       = array();
     $labelcode      = array();
+    $aAnswerColId	= array(); //ORVIL(+) ID for each member of column
 
     foreach ($aQuestions as $lrow) {
         $labelans[]  = $lrow['question'];
         $labelcode[] = $lrow['title'];
+        $colRelevance[] = $lrow['relevance'];	//ORVIL(+) this is the relevance expression for each column
     }
 
     if ($numrows = count($labelans)) {
