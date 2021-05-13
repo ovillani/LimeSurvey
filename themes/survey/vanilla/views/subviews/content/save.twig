@@ -36,7 +36,7 @@
 {# Include the form opening tag #}
 {{ include('./subviews/header/start_form.twig') }} <!-- main form -->
 
-    {# This will display the script and the hidden inputs needed for Expression Manager #}
+    {# This will display the script and the hidden inputs needed for ExpressionScript Engine #}
     {{ aSurveyInfo.EM.ScriptsAndHiddenInputs  }}
 
     <div class="{{ aSurveyInfo.class.savecontainer }} well clearfix " {{ aSurveyInfo.attr.savecontainer }}>
@@ -205,7 +205,7 @@
                                 <div class='{{ aSurveyInfo.class.saveformsurveydivfdivdivdiv }} ' {{ aSurveyInfo.attr.saveformsurveydivddivdivdiv }} >
                                     <img src='{{ aSurveyInfo.aSaveForm.aCaptcha.sImageUrl }}' {{ aSurveyInfo.attr.saveformsurveydivddivdivdivimg }}   />
                                 </div>
-                                <input class='{{ aSurveyInfo.class.saveformsurveydivfdivdivinput }}  form-control'  {{ aSurveyInfo.attr.saveformsurveydivddivdivinput }} />
+                                <input class='{{ aSurveyInfo.class.saveformsurveydivfdivdivinput }}  form-control'  {{ aSurveyInfo.attr.saveformsurveydivfdivdivinput }} />
                             </div>
                         </div>
                     </div>

@@ -25,7 +25,9 @@
             'modalType'     => 'yes-no',
             'keepopen'      => 'no',
             'sModalTitle'   => gT('Delete responses'),
-            'htmlModalBody' => gT('Are you sure you want to delete the selected responses?'),
+            'htmlModalBody' => gT('Are you sure you want to delete the selected responses?')
+                . '<br/>'
+                . gT('Please note that if you delete an incomplete response during a running survey, the participant will not be able to complete it.'),
             'aCustomDatas'  => array(
                 array( 'name'=>'sid',  'value'=> $_GET['surveyid']),
             ),
@@ -35,8 +37,8 @@
             'type'        => 'action',
             'action'      => 'deleteAttachments',
             //'url'         =>  App()->createUrl("admin/responses", array("sa"=>"actionDeleteAttachments")),
-            'url'         =>  App()->createUrl('/admin/responses/sa/actionDeleteAttachments/surveyid/'.$_GET['surveyid']),
-            'iconClasses' => 'text-danger glyphicon glyphicon-paperclip',
+            'url'         =>  App()->createUrl("/admin/responses/sa/actionDeleteAttachments/", array("surveyid" => $_GET['surveyid'] )),
+            'iconClasses' => 'text-danger fa fa-paperclip',
             'text'        =>  gT('Delete attachments'),
             'grid-reload' => 'yes',
 
@@ -72,7 +74,7 @@
             'type'            => 'action',
             'action'          => 'export',
             'url'             =>  App()->createUrl('admin/export/sa/exportresults/surveyid/'.$_GET['surveyid']),
-            'iconClasses'     => 'glyphicon glyphicon-download-alt',
+            'iconClasses'     => 'fa fa-upload',
             'text'            =>  gT('Export'),
 
             'aLinkSpecificDatas'  => array(

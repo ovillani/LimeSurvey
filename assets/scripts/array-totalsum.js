@@ -9,7 +9,8 @@ $(document).on('ready pjax:scriptcomplete',function () {
     $('div.array-multi-flexi-text table.show-totals input:enabled').each(updatetotals);
 });
 
-function updatetotals() {
+function updatetotals(e) {
+    console.ls.log(e);
     var inputValue = $(this).val();
     var sRadix = LSvar.sLEMradix;
     var sTableID = $(this).closest('table').attr('id');

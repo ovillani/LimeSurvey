@@ -213,6 +213,7 @@ padding-top:1em;padding-bottom:1em;margin-bottom:2em;
 {
     display: block;
     clear: both;
+    margin-right: 3rem;
 }
 .question-item .other-label
 {
@@ -287,6 +288,10 @@ padding-top:1em;padding-bottom:1em;margin-bottom:2em;
 }
 .js td.radio-item,.js td.checkbox-item{
     cursor: pointer;
+}
+
+.slider-container {
+    min-height: 15px;
 }
 
 /* Show more the heading in table */
@@ -631,10 +636,6 @@ only screen and (max-width: 760px),
 .othertext-label-checkox-container {
     padding-top: 5px;
     margin-right: 5px;
-}
-
-.geoloc-item .search-icon, .geoloc-item .checkbox  {
-    padding-top: 10px;
 }
 
 .geoname_search {

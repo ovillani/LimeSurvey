@@ -3,20 +3,21 @@
 class SurveymenuEntryData extends CFormModel
 {
 
-    public $rawData = null;    
-    public $render = null;    
-    public $link = "admin/survey/sa/rendersidemenulink";
+    public $rawData = null;
+    public $render = null;
+    public $link = "surveyAdministration/rendersidemenulink";
     public $linkData  = array();
     public $linkExternal = false;
     public $surveyid  = 0;
     public $menuEntry = null;
+    public $placeholder = false;
     public $pjaxed = true;
     public $isActive  = null;
 
     /**
      * @param integer|null $surveyid
      */
-    public function apply($menuEntry, $surveyid)
+    public function apply($menuEntry, $surveyid = null)
     {
         $this->surveyid = $surveyid;
         $this->menuEntry = $menuEntry;
@@ -34,7 +35,7 @@ class SurveymenuEntryData extends CFormModel
 
     public function createOptionJson($addSurveyID = false, $addQuestionGroupId = false, $addQuestionId = false)
     {
-        
+
         $dataArray = array();
         if ($addSurveyID) {
                     $dataArray['surveyid'] = ['survey', 'sid'];
@@ -63,11 +64,13 @@ class SurveymenuEntryData extends CFormModel
 
         return json_encode(array('render' => $baseArray));
     }
-    
+
     public function linkCreator()
     {
-        $returnLink = Yii::app()->getController()->createUrl($this->link, $this->linkData);
-        return $returnLink;
+        if ($this->linkExternal) {
+            return  Yii::app()->getController()->createAbsoluteUrl($this->link, $this->linkData);
+        }
+        return  Yii::app()->getController()->createUrl($this->link, $this->linkData);
     }
 
     private function _parseDataAttribute()
@@ -85,7 +88,7 @@ class SurveymenuEntryData extends CFormModel
             $this->linkData[$key] = $value;
         }
     }
-    
+
 
     private function _parseLink()
     {
@@ -96,28 +99,30 @@ class SurveymenuEntryData extends CFormModel
         } else {
             $this->link = $this->menuEntry->menu_link;
         }
-
     }
 
     /**
+     * @param $variable
      * @param string[] $checkArray
+     * @param int $i
+     * @param callable $fallback
+     * @return mixed|null
      */
     private function _recursiveIssetWithDefault($variable, $checkArray, $i = 0, $fallback = null)
     {
         $default = null;
         if (is_array($variable) && array_key_exists($checkArray[$i], $variable)) {
                     $default = $variable[$checkArray[$i]];
-        } else if (is_object($variable) && property_exists($variable, $checkArray[$i])) {
+        } elseif (is_object($variable) && property_exists($variable, $checkArray[$i])) {
                     $default = $variable->{$checkArray[$i]};
         }
         if (!isset($default)) {
                     return $fallback;
-        } else if (count($checkArray) > $i + 1) {
+        } elseif (count($checkArray) > $i + 1) {
                     return $this->_recursiveIssetWithDefault($default, $checkArray, $i + 1, $fallback);
         } else {
                     return $default;
         }
-
     }
 
     private function _getValueForLinkData($getDataPair)
@@ -127,27 +132,26 @@ class SurveymenuEntryData extends CFormModel
         list($type, $attribute) = $getDataPair;
         $oTypeObject = null;
         switch ($type) {
-            case 'survey': 
+            case 'survey':
                 $oTypeObject = &$oSurvey;
                 break;
             case 'template':
                 $oTypeObject = Template::model()->findByPk($oSurvey->template);
                 break;
             case 'questiongroup':
-                if (isset($_REQUEST['gid'])) {
-                    $oTypeObject = QuestionGroup::model()->getByPk(((int) $_REQUEST['gid']));
+                if (App()->getRequest()->getParam('gid')) {
+                    $oTypeObject = QuestionGroup::model()->findByPk(array('gid' => App()->getRequest()->getParam('gid'),'language' => App()->getLanguage()));
                 }
                 break;
             case 'question':
-                if (isset($_REQUEST['qid'])) {
-                    $oTypeObject = QuestionGroup::model()->getByPk(((int) $_REQUEST['qid']));
+                if (App()->getRequest()->getParam('qid')) {
+                    $oTypeObject = QuestionGroup::model()->findByPk(array('gid' => App()->getRequest()->getParam('qid'),'language' => App()->getLanguage()));
                 }
                 break;
-            break; 
+            break;
         }
 
         $result = $oTypeObject != null ? $oTypeObject->{$attribute} : null;
         return $result;
     }
-
 }

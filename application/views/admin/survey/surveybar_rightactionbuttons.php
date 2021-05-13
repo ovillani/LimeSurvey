@@ -27,18 +27,18 @@
                 //Save and new button
                 $paramArray = array();
                 $paramArray["surveyid"] = $surveyid;
-                $saveAndNewLink = $this->createUrl("admin/questiongroups/sa/add/", $paramArray);
-                $saveAndAddQuestionLink = $this->createUrl("admin/questions/sa/newquestion/", $paramArray);
+                $saveAndNewLink = $this->createUrl("questionGroupsAdministration/add/", $paramArray);
+                $saveAndAddQuestionLink = $this->createUrl("questionAdministration/view/", $paramArray);
             ?>
 
             <a class="btn btn-success" id='save-and-new-question-button' href="<?php echo $saveAndAddQuestionLink ?>" role="button">
                 <span class="fa fa-floppy-o"></span>
-                <?php eT("Save and add question"); ?>
+                <?php eT("Save & add new question"); ?>
             </a>
 
             <a class="btn btn-success" id='save-and-new-button' href="<?php echo $saveAndNewLink ?>" role="button">
                 <span class="fa fa-floppy-o"></span>
-                <?php eT("Save and new group"); ?>
+                <?php eT("Save & add new group"); ?>
             </a>
         <?php endif; ?>
         <?php if (isset($surveybar['importquestion'])):?>
@@ -51,7 +51,7 @@
                     $paramArray["gid"] = $gid;
                 }
 
-                $saveAndNewLink = $this->createUrl("admin/questions/sa/newquestion/", $paramArray);
+                $saveAndNewLink = $this->createUrl("questionAdministration/view/", $paramArray);
             ?>
 
             <a class="btn btn-success" id='save-and-new-button' href="<?php echo $saveAndNewLink ?>" role="button">

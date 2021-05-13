@@ -12,47 +12,85 @@
     <metadata>
         <name>bootswatch</name>
         <title>Bootswatch Theme</title>
-
+        <type>theme</type>
         <creationDate>08/01/2016</creationDate>
         <author>Louis-Sébastien Gac Artigas</author>
         <authorEmail>louis.gac@limesurvey.org</authorEmail>
         <authorUrl>http://www.limesurvey.org</authorUrl>
-        <copyright>Copyright (C) 2005 - 2016 LimeSurvey Gmbh, Inc. All rights reserved.</copyright>
+        <copyright>Copyright (C) 2005 - 2019 LimeSurvey Gmbh, Inc. All rights reserved.</copyright>
         <license>GNU General Public License version 2 or later</license>
-        <version>2.0</version>
+        <version>3.0</version>
         <apiVersion>3</apiVersion>
-        <description><![CDATA[<strong>LimeSurvey Bootwatch Theme</strong><br>Based on BootsWatch Themes: <a href='https://bootswatch.com/3/'>Visit BootsWatch page</a> ]]></description>
-        <last_update>2017-11-29 19:28:00</last_update>
+        <description><![CDATA[<strong>{{gT("LimeSurvey Bootwatch Theme")}}</strong><br>{{gT("Based on BootsWatch Themes:")}} <a href='https://bootswatch.com/3/'>{{gT("Visit BootsWatch page")}}</a> ]]></description>
+        <lastUpdate>2019-10-24 12:00:00</lastUpdate>
         <extends>vanilla</extends>
     </metadata>
 
     <!--
         Here the list of the css/js files to add to the template package.
         About packages in Yii: http://www.yiiframework.com/doc/api/1.1/CClientScript#packages-detail
+
+        NOTE: The "add" tag also count as a "replace" tag.
+              Eg: You can't add a file with the same name as a file in the mother theme. It will always replace it. You must use a diffrent file name.
+              Eg: Vanilla manifest already has "<add>css/theme.css</add>". So here, if you use "<add>css/theme.css</add>" it will replace the vanilla css/theme.css
+
+        NOTE: If a file in a mother theme, you don't need to add it here again.
+              Eg: css/ajaxify.css is already added in vanilla, this theme doesn't replace it, so ne need to add it here.
+                  Even if no mention at all about  "css/ajaxify.css" is made here, it will be added because it's in the mother theme configuration
+
+        NOTE: To easy test changes in config file, you can force the use of the XML file rather than DB. To do so, turn debug mode on, and in config.php config array, on bottom of debug mode, add:
+              'force_xmlsettings_for_survey_rendering' => true,
+
+              Then, you will not need anymore to reset your theme each time you change the config file.
+              But, once turning the setting off, You will still must reset the theme to the changes are pushed to DB
     -->
     <files>
         <css>
-            <add>css/ajaxify.css</add>
-            <add>css/theme.css</add>
-            <add>css/custom.css</add>
+            <replace>css/theme.css</replace>
+            <replace>css/custom.css</replace>
         </css>
         <js>
-            <add>scripts/theme.js</add>
-            <add>scripts/ajaxify.js</add>
-            <add>scripts/custom.js</add>
+            <replace>scripts/theme.js</replace>
+            <replace>scripts/custom.js</replace>
         </js>
         <print_css>
-            <add>css/print_theme.css</add>
+            <replace>css/print_theme.css</replace>
         </print_css>
     </files>
 
     <!-- You can add here any option you want. It will be available in twig file via aSurveyInfo.options.youroptionname -->
-    <!-- eg: Ajaxmode: will be available with aSurveyInfo.options.ajaxmode -->
     <options>
-        <ajaxmode>on</ajaxmode>
-        <brandlogo>on</brandlogo>
-        <brandlogofile>./files/logo.png</brandlogofile>
-        <container>on</container>
+        <!-- simple options -->
+        <container type="buttons" category="Simple options" width="4" title="Survey container" options="on|off" optionlabels="Yes|No">on</container>
+        <showpopups type="buttons" category="Simple options" width="4" title="Show popups" options="1|0|-1" optionlabels="Popup|On page|No">1</showpopups>
+        <showclearall type="buttons" category="Simple options" width="4" title="Show Clear All button" options="on|off" optionlabels="Yes|No">off</showclearall>
+        <questionhelptextposition type="buttons" category="Simple options" width="4" title="Question help text position" options="top|bottom" optionlabels="Top|Bottom">top</questionhelptextposition>
+        <fixnumauto type="buttons" category="Simple options" width="4" title="Fix automatically numeric value" options="enable|partial|disable" optionlabels="Yes|For expression|No">off</fixnumauto>
+        <!-- images -->
+        <brandlogo type="buttons" category="Images" width="4" title="Logo" options="on|off" optionlabels="Yes|No">on</brandlogo>
+        <brandlogofile type="dropdown" category="Images" width="6" title="Logo file" parent="brandlogo">themes/survey/bootswatch/files/logo.png</brandlogofile>
+        <hideprivacyinfo type="buttons" category="Simple options" width="4" title="Hide privacy info" options="on|off" optionlabels="Yes|No">off</hideprivacyinfo>
+        <cssframework type="dropdown" category="Simple options" width="12" title="Variations" parent="cssframework">
+            <dropdownoptions>
+                <option data-mode="replace" value="css/variations/basic.min.css">Basic Bootstrap</option>
+                <option data-mode="replace" value="css/variations/cerulean.min.css">Cerulean</option>
+                <option data-mode="replace" value="css/variations/cosmos.min.css">Cosmos</option>
+                <option data-mode="replace" value="css/variations/cyborg.min.css">Cyborg</option>
+                <option data-mode="replace" value="css/variations/darkly.min.css">Darkly</option>
+                <option data-mode="replace" value="css/variations/flatly.min.css">Flatly</option>
+                <option data-mode="replace" value="css/variations/journal.min.css">Journal</option>
+                <option data-mode="replace" value="css/variations/lumen.min.css">Lumen</option>
+                <option data-mode="replace" value="css/variations/paper.min.css">Paper</option>
+                <option data-mode="replace" value="css/variations/readable.min.css">Readable</option>
+                <option data-mode="replace" value="css/variations/sandstone.min.css">Sandstone</option>
+                <option data-mode="replace" value="css/variations/simplex.min.css">Simplex</option>
+                <option data-mode="replace" value="css/variations/slate.min.css">Slate</option>
+                <option data-mode="replace" value="css/variations/spacelab.min.css">Spacelab</option>
+                <option data-mode="replace" value="css/variations/superhero.min.css">Superhero</option>
+                <option data-mode="replace" value="css/variations/united.min.css">United</option>
+                <option data-mode="replace" value="css/variations/yeti.min.css">Yeti</option>
+            </dropdownoptions>
+        </cssframework>
     </options>
 
     <!-- Here datas about how LimeSurvey should load the theme -->
@@ -77,6 +115,9 @@
             <add>moment</add>
         </packages>
 
+        <!-- core: use core options view file, custom: use customized options.twig view file -->
+        <optionspage>core</optionspage>
+
         <!--
             List of pages/files for tempalte editor
             When a user select a page, the related files will be offer in the editable files
@@ -84,8 +125,11 @@
         <template_editor>
             <screens>
                 <question>
+                    <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('Question')}} ]]></screen_title>
                     <file type="view" role="layout">layout_global.twig</file>
+                    <file type="view" role="subview">./subviews/footer/footer.twig</file>
                     <file type="view" role="content">./subviews/content/main.twig</file>
+                    <file type="view" role="subview">./subviews/messages/justsaved.twig</file>
                     <file type="view" role="subview">./subviews/survey/group.twig</file>
                     <file type="view" role="subview">./subviews/survey/group_subviews/group_container.twig</file>
                     <file type="view" role="subview">./subviews/survey/group_subviews/group_desc.twig</file>
@@ -104,7 +148,9 @@
                 </question>
 
                 <surveylist>
+                    <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('Survey list')}} ]]></screen_title>
                     <file type="view" role="layout">layout_survey_list.twig</file>
+                    <file type="view" role="subview">./subviews/footer/footer.twig</file>
                     <file type="view" role="subview">./subviews/content/mainrow.twig</file>
                     <file type="view" role="subview">./subviews/content/outerframe.twig</file>
                     <file type="css">./css/theme.css</file>
@@ -114,7 +160,9 @@
                 </surveylist>
 
                 <welcome>
+                    <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('Welcome')}} ]]></screen_title>
                     <file type="view" role="layout">layout_global.twig</file>
+                    <file type="view" role="subview">./subviews/footer/footer.twig</file>
                     <file type="view" role="subview">./subviews/content/mainrow.twig</file>
                     <file type="view" role="subview">./subviews/content/outerframe.twig</file>
                     <file type="view" role="content">./subviews/content/firstpage.twig</file>
@@ -134,7 +182,9 @@
                 </welcome>
 
                 <completed>
+                    <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('Completed')}} ]]></screen_title>
                     <file type="view" role="layout">layout_global.twig</file>
+                    <file type="view" role="subview">./subviews/footer/footer.twig</file>
                     <file type="view" role="subview">./subviews/content/mainrow.twig</file>
                     <file type="view" role="subview">./subviews/content/outerframe.twig</file>
                     <file type="view" role="content">./subviews/content/submit.twig</file>
@@ -145,7 +195,9 @@
                 </completed>
 
                 <assessments>
+                    <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('Assessments')}} ]]></screen_title>
                     <file type="view" role="layout">layout_global.twig</file>
+                    <file type="view" role="subview">./subviews/footer/footer.twig</file>
                     <file type="view" role="subview">./subviews/content/mainrow.twig</file>
                     <file type="view" role="subview">./subviews/content/outerframe.twig</file>
                     <file type="view" role="content">./subviews/content/submit.twig</file>
@@ -157,11 +209,15 @@
                 </assessments>
 
                 <error>
+                    <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('Error')}} ]]></screen_title>
                     <file type="view" role="layout">layout_errors.twig</file>
+                    <file type="view" role="subview">./subviews/footer/footer.twig</file>
                 </error>
 
                 <clearall>
+                    <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('Clear all')}} ]]></screen_title>
                     <file type="view" role="layout">layout_global.twig</file>
+                    <file type="view" role="subview">./subviews/footer/footer.twig</file>
                     <file type="view" role="subview">./subviews/content/mainrow.twig</file>
                     <file type="view" role="subview">./subviews/content/outerframe.twig</file>
                     <file type="view" role="content">./subviews/content/clearall.twig</file>
@@ -172,7 +228,9 @@
                 </clearall>
 
                 <load>
+                    <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('Load')}} ]]></screen_title>
                     <file type="view" role="layout">layout_global.twig</file>
+                    <file type="view" role="subview">./subviews/footer/footer.twig</file>
                     <file type="view" role="subview">./subviews/content/mainrow.twig</file>
                     <file type="view" role="subview">./subviews/content/outerframe.twig</file>
                     <file type="view" role="content">./subviews/content/load.twig</file>
@@ -183,7 +241,9 @@
                 </load>
 
                 <save>
+                    <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('Save')}} ]]></screen_title>
                     <file type="view" role="layout">layout_global.twig</file>
+                    <file type="view" role="subview">./subviews/footer/footer.twig</file>
                     <file type="view" role="subview">./subviews/content/mainrow.twig</file>
                     <file type="view" role="subview">./subviews/content/outerframe.twig</file>
                     <file type="view" role="content">./subviews/content/save.twig</file>
@@ -194,7 +254,9 @@
                 </save>
 
                 <register>
+                    <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('Registration')}} ]]></screen_title>
                     <file type="view" role="layout">layout_global.twig</file>
+                    <file type="view" role="subview">./subviews/footer/footer.twig</file>
                     <file type="view" role="content">./subviews/content/register.twig</file>
                     <file type="view" role="subview">./subviews/registration/register_error.twig</file>
                     <file type="view" role="subview">./subviews/registration/register_head.twig</file>
@@ -204,19 +266,35 @@
                 </register>
 
                 <printanswers>
+                    <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('Print answers')}} ]]></screen_title>
                     <file type="view" role="layout">layout_printanswers.twig</file>
                     <file type="view" role="subview">./subviews/content/outerframe.twig</file>
                     <file type="view" role="content">./subviews/content/printanswers.twig</file>
-                    <file type="view" role="subview">./subviews/printanswers/printanswers_question.twig</file>
+                    <file type="view" role="subview">./subviews/printanswers/printanswers_head.twig</file>
                     <file type="view" role="subview">./subviews/printanswers/printanswers_table.twig</file>
+                    <file type="view" role="subview">./subviews/printanswers/printanswers_question.twig</file>
+                    <file type="view" role="subview">./subviews/printanswers/printanswers_foot.twig</file>
                 </printanswers>
 
+                <statistics_user>
+                    <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('Public statistics')}} ]]></screen_title>
+                    <file type="view" role="layout">layout_statistics_user.twig</file>
+                    <file type="view" role="subview">./subviews/content/outerframe.twig</file>
+                    <file type="view" role="content">./subviews/content/statistics_user.twig</file>
+                    <file type="view" role="subview">./subviews/statistics_user/statistics_user_head.twig</file>
+                    <file type="view" role="subview">./subviews/statistics_user/statistics_user_content.twig</file>
+                    <file type="view" role="subview">./subviews/statistics_user/statistics_user_foot.twig</file>
+                </statistics_user>
+
                 <pdf>
+                    <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('PDF')}} ]]></screen_title>
                     <file type="view" role="layout">layout_print.twig</file>
                 </pdf>
 
                 <navigation>
+                    <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('Navigation')}} ]]></screen_title>
                     <file type="view" role="layout">layout_global.twig</file>
+                    <file type="view" role="subview">./subviews/footer/footer.twig</file>
                     <file type="view" role="content">./subviews/content/main.twig</file>
                     <file type="view" role="subview">./subviews/navigation/ajax_indicator.twig</file>
                     <file type="view" role="subview">./subviews/navigation/clearall_links.twig</file>
@@ -226,8 +304,71 @@
                     <file type="view" role="subview">./subviews/navigation/save_links.twig</file>
                 </navigation>
 
+                <quotas>
+                  <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('Quotas exceeded')}} ]]></screen_title>
+                  <file type="view" role="layout">layout_global.twig</file>
+                  <file type="view" role="content">./subviews/content/quotas.twig</file>
+                  <file type="view" role="subview">./subviews/header/start_form.twig</file>
+                </quotas>
+
+                <token>
+                  <screen_title  type="data"  role="title" twig="on"><![CDATA[ {{gT('Participant')}} ]]></screen_title>
+                  <file type="view" role="layout">layout_user_forms.twig</file>
+                  <file type="view" role="content">./subviews/content/userforms.twig</file>
+                  <file type="view" role="subview">./subviews/logincomponents/token.twig</file>
+                  <file type="view" role="subview">./subviews/logincomponents/captcha.twig</file>
+                </token>
+
             </screens>
+
+            <!-- Data for preview in Theme Editor and Twig Cache command line generator  -->
+            <default_data>
+              <survey type="core">
+                <name type="data" twig="on"><![CDATA[ {{ gT("Template Sample") }} ]]></name>
+                <description type="data" twig="on"><![CDATA[<p>{{ gT('This is a sample survey description. It could be quite long.') }}</p><p>{{ gT("But this one isn't.") }}<p>]]></description>
+                <welcome  type="data" twig="on"><![CDATA[<p>{{ gT('Welcome to this sample survey')}} <p> <p> {{ gT('You should have a great time doing this') }} <p> ]]></welcome>
+                <therearexquestions  type="data" twig="on"><![CDATA[gT('There is 2 question in this survey'])]]></therearexquestions>
+                <surveyls_url type="data" twig="on">"https://www.limesurvey.org/"</surveyls_url>
+                <surveyls_urldescription type="data" twig="on"><![CDATA[ gT("Some URL description") ]]></surveyls_urldescription>
+              </survey>
+              <group type="core">
+                <name type="data" twig="on"><![CDATA[ {{ gT("Group 1: The first lot of questions") }} ]]></name>
+                <description type="data" twig="on"><![CDATA[ {{ gT("This group description is fairly vacuous, but quite important.") }} ]]></description>
+              </group>
+              <question_1 type="core">
+                <code type="data" >'Q1 '</code>
+                <text type="data" twig="on"><![CDATA[ {{ gT("How many roads must a man walk down?") }} ]]></text>
+                <valid_message type="data" twig="on"><![CDATA[ <div id="vmsg_4496_num_answers" class="em_num_answers emtip error"><span class="fa fa-exclamation-circle" aria-hidden="true"></span> {{ gT("Choose one of the following answers") }} </div> ]]></valid_message>
+              </question_1>
+              <question_2 type="core">
+                <code type="data" >'Q2 '</code>
+                <text type="data" twig="on"><![CDATA[ {{ gT("Please explain something in detail:") }} ]]></text>
+                <valid_message type="data" twig="on"><![CDATA[<div id="vmsg_4496_num_answers" class="em_num_answers emtip error"><span class="fa fa-exclamation-circle" aria-hidden="true"></span> {{ gT("Hint when response is not valid") }} </div> ]]></valid_message>
+              </question_2>
+              <assessments  type="core">
+                <name type="data" twig="on"><![CDATA[ {{ gT("Welcome to the Assessment") }} ]]></name>
+                <message type="data" twig="on"><![CDATA[ {{ gT("You got {TOTAL} points out of 3 possible points.") }} ]]></message>
+              </assessments>
+
+              <!-- This is an exemple to show you how to add your custom screen in the theme editor with custom values -->
+              <!-- The name of the array inside aSurveyInfo that feed your twig view is specified as "array-name". If you check quotas.twig, you'll notice the main variable is aSurveyInfo.aQuotas -->
+              <!-- Notice that the data you pass here are simple. You can't pass complex arrays inside the array, only key => value pairs.-->
+              <quotas type="custom" arrayName="aQuotas">
+                <sMessage type="data" twig="on"><![CDATA[ {{ gT("Sorry your responses have exceeded a quota on this survey.") }} ]]></sMessage>
+                <sUrl type="data">http://limesurvey.org</sUrl>
+                <sUrlDescription type="data" twig="on"><![CDATA[ {{ gT("End url") }} ]]></sUrlDescription>
+                <bShowNavigator type="data">false</bShowNavigator>
+              </quotas>
+
+              <userforms type="custom" arrayName="aForm">
+                <sType type="data">token</sType>
+              </userforms>
+            </default_data>
         </template_editor>
     </engine>
+
+    <!-- Disable the updater system for core themes. -->
+    <updaters disabled="disabled">
+    </updaters>
 
 </config>

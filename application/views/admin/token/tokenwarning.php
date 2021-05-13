@@ -17,7 +17,7 @@
 
                     <?php
                         if (Permission::model()->hasSurveyPermission($oSurvey->sid, 'surveysettings', 'update') || Permission::model()->hasSurveyPermission($oSurvey->sid, 'tokens','create')){
-                            eT("If you initialise a survey participants table for this survey then this survey will only be accessible to users who provide a token either manually or by URL.");
+                            eT("If you initialise a survey participants table for this survey then this survey will only be accessible to users who provide an access code either manually or by URL.");
                         ?><br /><br />
 
                         <?php
@@ -32,15 +32,15 @@
 
                         <?php echo CHtml::form(array("admin/tokens/sa/index/surveyid/{$oSurvey->sid}"), 'post'); ?>
                             <button type="submit" class="btn btn-default  btn-lg"  name="createtable" value="Y"><?php eT("Initialise participant table"); ?></button>
-                            <a href="<?php echo $this->createUrl("admin/survey/sa/view/surveyid/$oSurvey->sid"); ?>" class="btn btn-default  btn-lg"><?php eT("No, thanks."); ?></a>
+                            <a href="<?php echo $this->createUrl("surveyAdministration/view/surveyid/$oSurvey->sid"); ?>" class="btn btn-default  btn-lg"><?php eT("No, thanks."); ?></a>
                     <?php echo CHtml::endForm() ?>
 
 
                     <?php
                     }else{
-                        eT("You don't have the permission to activate tokens.");
+                        eT("You don't have the permission to activate participants.");
                     ?>
-                    <input type='submit' value='<?php eT("Back to main menu"); ?>' onclick="window.open('<?php echo $this->createUrl("admin/survey/sa/view/surveyid/$oSurvey->sid"); ?>', '_top')" /></div>
+                    <input type='submit' value='<?php eT("Back to main menu"); ?>' onclick="window.open('<?php echo $this->createUrl("surveyAdministration/view/surveyid/$oSurvey->sid"); ?>', '_top')" /></div>
 
                     <?php
                     }
@@ -56,6 +56,9 @@ if ($tcount > 0 && (Permission::model()->hasSurveyPermission($oSurvey->sid, 'sur
         <div class="col-sm-12 content-right">
             <div class="jumbotron message-box">
                 <h2><?php eT("Restore options"); ?></h2>
+                <p class="text-info">
+                    <?php eT("Please be aware that tables including encryption should not be restored if they have been created in LimeSurvey 4 before version 4.6.1")?>
+                </p>
                 <p class="lead text-success">
                     <strong>
                         <?php eT("The following old survey participants tables could be restored:"); ?>
@@ -81,30 +84,3 @@ if ($tcount > 0 && (Permission::model()->hasSurveyPermission($oSurvey->sid, 'sur
 
 </div>
 </div>
-
-<?php 
-App()->getClientScript()->registerScript("Tokens:warningPage", "
-    function addHiddenElement(theform,thename,thevalue)
-    {
-        var myel = document.createElement('input');
-        myel.type = 'hidden';
-        myel.name = thename;
-        theform.appendChild(myel);
-        myel.value = thevalue;
-        return myel;
-    }
-
-    function sendPost(myaction,checkcode,arrayparam,arrayval)
-    {
-        var myform = document.createElement('form');
-        document.body.appendChild(myform);
-        myform.action =myaction;
-        myform.method = 'POST';
-        for (i=0;i<arrayparam.length;i++)
-            {
-            addHiddenElement(myform,arrayparam[i],arrayval[i])
-        }
-        myform.submit();
-    }
-", LSYii_ClientScript::POS_BEGIN ); 
-?>

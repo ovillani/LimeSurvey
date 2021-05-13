@@ -91,10 +91,6 @@
     {{ include('./subviews/header/head.twig') }}
 
     <body class=" {{ aSurveyInfo.class.body }} font-{{  aSurveyInfo.options.font }} lang-{{aSurveyInfo.languagecode}} {{aSurveyInfo.surveyformat}} {% if( aSurveyInfo.options.brandlogo == "on") %}brand-logo{%endif%}" {{ aSurveyInfo.attr.body }} >
-        {% if (aSurveyInfo.options.ajaxmode == "on" and aSurveyInfo.printPdf != 1) %}
-            {# In vanilla, this file is empty, we keep it to have a common layout between all core themes #}
-            {{ include('./subviews/navigation/ajax_indicator.twig') }}
-        {% endif %}
 
         {# This used for the pjax system #}
         <div id="beginScripts">
@@ -125,6 +121,9 @@
                         <div id="{{ aSurveyInfo.id.surveylistrowjumbotron }}" {{ aSurveyInfo.attr.surveylistrowjumbotron }}>
                             {{ image('./files/survey_list_header.png', aSurveyInfo.name, {"class": "img-responsive center-block"}) }}
                             {{ aSurveyInfo.sSiteName }}
+                            <div class="ls-js-hidden">
+                                {{ include('./subviews/navigation/language_changer_form.twig') }}
+                            </div>
                         </div>
 
                         <div class="{{ aSurveyInfo.class.surveylistrowdiva }} col-xs-12" {{ aSurveyInfo.attr.surveylistrowdiva }}>
@@ -185,11 +184,14 @@
 
 
             {# Basic ThemeScript options  #}
-            {{ registerScript("BasicThemeScripts", " if(window.basicThemeScripts === undefined){ window.basicThemeScripts = new ThemeScripts(); } basicThemeScripts.initGlobal(); ", POS_END) }}
+            {{ registerScript("BasicThemeScripts", " if(window.basicThemeScripts === undefined){ window.basicThemeScripts = new ThemeScripts(); } basicThemeScripts.initGlobal(); ", "POS_END") }}
 
             {% endblock %}
             </div>
         </article>
+        {% block footer %}
+            {{ include('./subviews/footer/footer.twig') }}
+        {% endblock %}
         <div id="bottomScripts">
             <###end###>
         </div>

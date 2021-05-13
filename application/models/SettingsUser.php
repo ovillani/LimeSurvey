@@ -12,6 +12,11 @@
  */
 class SettingsUser extends LSActiveRecord
 {
+    const ENTITY_SURVEY = 100;
+    const ENTITY_SURVEYGROUP = 90;
+    const ENTITY_THEME = 80;
+    const ENTITY_EDITOR = 70;
+    const ENTITY_PLUGIN = 50;
     /**
      * @return string the associated database table name
      */
@@ -29,14 +34,14 @@ class SettingsUser extends LSActiveRecord
         // will receive user inputs.
         return array(
             array('uid, stg_name', 'required'),
-            array('uid', 'numerical', 'integerOnly'=>true),
-            array('entity', 'length', 'max'=>15),
-            array('entity_id', 'length', 'max'=>31),
-            array('stg_name', 'length', 'max'=>63),
+            array('uid', 'numerical', 'integerOnly' => true),
+            array('entity', 'length', 'max' => 15),
+            array('entity_id', 'length', 'max' => 31),
+            array('stg_name', 'length', 'max' => 63),
             array('stg_value', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('uid, entity, entity_id, stg_name, stg_value', 'safe', 'on'=>'search'),
+            array('uid, entity, entity_id, stg_name, stg_value', 'safe', 'on' => 'search'),
         );
     }
 
@@ -79,7 +84,9 @@ class SettingsUser extends LSActiveRecord
 
     public static function setUserSetting($stg_name, $stg_value, $uid = null, $entity = null, $entity_id = null)
     {
-        if ($uid === null) { $uid = Yii::app()->user->getId(); }        
+        if ($uid === null) {
+            $uid = Yii::app()->user->getId();
+        }
 
         $setting = self::getUserSetting($stg_name, $uid, $entity, $entity_id);
 
@@ -91,11 +98,36 @@ class SettingsUser extends LSActiveRecord
                 'uid' => $uid,
                 'entity' => $entity,
                 'entity_id' => $entity_id
-            ]);  
+            ]);
         }
         $setting->setAttribute('stg_value', $stg_value);
 
         return $setting->save();
+    }
+
+    /**
+     * Deletes user setting
+     *
+     * @param string $stg_name
+     * @param integer $uid | Can be omitted to just take the currently logged in users id
+     * @param string $entity | optional defaults to 'null'
+     * @param integer $entity_id | optional defaults to 'null'
+     * @return boolean Deleting success/failure
+     */
+
+    public static function deleteUserSetting($stg_name, $uid = null, $entity = null, $entity_id = null)
+    {
+        if ($uid === null) {
+            $uid = Yii::app()->user->getId();
+        }
+
+        $setting = self::getUserSetting($stg_name, $uid, $entity, $entity_id);
+
+        if ($setting !== null) {
+            return $setting->delete();
+        }
+
+        return false;
     }
 
     /**
@@ -109,14 +141,16 @@ class SettingsUser extends LSActiveRecord
      */
     public static function getUserSetting($stg_name, $uid = null, $entity = null, $entity_id = null)
     {
-        if ($uid === null) { $uid = Yii::app()->user->getId(); }        
-        $searchCriteria = new CDbCriteria;
+        if ($uid === null) {
+            $uid = Yii::app()->user->getId();
+        }
+        $searchCriteria = new CDbCriteria();
         $searchParams = [];
 
         $searchCriteria->addCondition('uid=:uid');
         $searchParams[':uid'] = $uid;
         $searchCriteria->addCondition('stg_name=:stg_name');
-        $searchParams[':stg_name'] = $stg_name; 
+        $searchParams[':stg_name'] = $stg_name;
         if ($entity != null) {
             $searchCriteria->addCondition('entity=:entity');
             $searchParams[':entity'] = $entity;
@@ -131,10 +165,10 @@ class SettingsUser extends LSActiveRecord
         }
 
         $searchCriteria->params = $searchParams;
-        
+
         $setting = self::model()->find($searchCriteria);
 
-        return $setting;
+        return $setting !== null ? $setting : null;
     }
 
     /**
@@ -147,10 +181,18 @@ class SettingsUser extends LSActiveRecord
      * @param integer|null $entity_id | optional defaults to 'null'
      * @return mixed|null  The current settings value or null id there is no setting
      */
-    public static function getUserSettingValue($stg_name, $uid = null, $entity = null, $entity_id = null)
+    public static function getUserSettingValue($stg_name, $uid = null, $entity = null, $entity_id = null, $default = null)
     {
         $setting = self::getUserSetting($stg_name, $uid, $entity, $entity_id);
-        return $setting != null ? $setting->getAttribute('stg_value') : null;
+        return $setting != null ? $setting->getAttribute('stg_value') : $default;
+    }
+
+    public static function applyBaseSettings($iUid)
+    {
+        $defaults = LsDefaultDataSets::getDefaultUserSettings();
+        foreach ($defaults as $default) {
+            self::setUserSetting($default['stg_name'], $default['stg_value'], $iUid);
+        }
     }
 
     /**
@@ -169,7 +211,7 @@ class SettingsUser extends LSActiveRecord
     {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
-        $criteria = new CDbCriteria;
+        $criteria = new CDbCriteria();
 
         $criteria->compare('uid', $this->uid);
         $criteria->compare('entity', $this->entity, true);
@@ -178,7 +220,7 @@ class SettingsUser extends LSActiveRecord
         $criteria->compare('stg_value', $this->stg_value, true);
 
         return new CActiveDataProvider($this, array(
-            'criteria'=>$criteria,
+            'criteria' => $criteria,
         ));
     }
 

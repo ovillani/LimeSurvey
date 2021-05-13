@@ -1,6 +1,3 @@
-var LS = LS || {
-    onDocumentReady: {}
-};
 
 function toggleSection(chevron, section) {
     section.toggle();
@@ -21,7 +18,7 @@ var COLORS_FOR_SURVEY = new Array('20,130,200', '232,95,51', '34,205,33', '210,2
 var initChartGraph = function (element, type, qid) {
     if (typeof chartjs[qid] == "undefined" || typeof chartjs == "undefined") // typeof chartjs[$qid] == "undefined" || typeof chartjs == "undefined"
     {
-        if (type == 'Bar' || type == 'Radar' || type == 'Line') {
+        if (type === 'Bar' || type === 'Radar' || type === 'Line' || type === 'Doughnut' || type === 'Pie' || type === 'PolarArea') {
             init_chart_js_graph_with_datasets(type, qid);
         } else {
             init_chart_js_graph_with_datas(type, qid);
@@ -69,6 +66,35 @@ var initChartGraph = function (element, type, qid) {
     };
 })(jQuery);
 
+function parseType(typeDef) {
+    switch(typeDef) {
+        case "Bar":
+        case "bar":
+            return "bar";
+        
+        case "Pie":
+        case "pie":
+            return "pie";
+
+        case "Radar":
+        case "radar":
+            return "radar";
+        
+        case "Line":
+        case "line":
+            return "line";
+        
+        case "PolarArea":
+        case "polarArea":
+        case "polararea":
+            return "polarArea";
+        
+        case "Doughnut":
+        case "doughnut":
+            return "doughnut";
+
+    }
+}
 
 /**
  * This function load the graph needing datasets (bars, etc.)
@@ -83,41 +109,56 @@ function init_chart_js_graph_with_datasets($type, $qid) {
     var $grawdata = $statistics.grawdata
     var $color = $canva.data('color');
 
-    $('#legend-no-percent-' + $qid).show();
-    $('#legend-percent-' + $qid).hide();
-    $('#stat-no-answer-' + $qid).hide();
-
     if (typeof chartjs != "undefined") {
         if (typeof chartjs[$qid] != "undefined") {
             window.chartjs[$qid].destroy();
         }
     }
 
-    window.chartjs[$qid] = new Chart($canvas)[$type]({
+    var dataDefinition = {
         labels: $labels,
-        datasets: [{
-            label: $qid,
-            data: $grawdata,
-            fillColor: "rgba(" + COLORS_FOR_SURVEY[$color] + ",0.2)",
-            strokeColor: "rgba(" + COLORS_FOR_SURVEY[$color] + ",1)",
-            pointColor: "rgba(" + COLORS_FOR_SURVEY[$color] + ",1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(" + COLORS_FOR_SURVEY[$color] + ",1)",
+    };
 
-        }],
+    dataDefinition.datasets = [{
+        label: $qid,
+        data: $grawdata,
+        backgroundColor: [],
+        borderColor: [],
+        hoverBackgroundColor: [],
+        pointBackgroundColor: "#fff",
+        pointHoverBackgroundColor: "#fff",
+        pointHoverBorderColor: []
+    }];
+
+    // different color for each bar
+    LS.ld.forEach($labels, function (label, key) {
+        var colorIndex = (parseInt(key) + $color);
+        dataDefinition.datasets[0].backgroundColor.push("rgba(" + COLORS_FOR_SURVEY[colorIndex] + ",0.6)");
+        dataDefinition.datasets[0].borderColor.push("rgba(" + COLORS_FOR_SURVEY[colorIndex] + ",1)");
+        dataDefinition.datasets[0].hoverBackgroundColor.push("rgba(" + COLORS_FOR_SURVEY[colorIndex] + ",0.9)");
+        dataDefinition.datasets[0].pointHoverBorderColor.push("rgba(" + COLORS_FOR_SURVEY[colorIndex] + ",1)");
     });
 
-    // We need to give a different color to each bar
-    if ($type == 'Bar') {
-        for (var key in $labels) {
-            $index = (parseInt(key) + $color);
-            window.chartjs[$qid].datasets[0].bars[key].fillColor = "rgba(" + COLORS_FOR_SURVEY[$index] + ",0.6)";
-            window.chartjs[$qid].datasets[0].bars[key].strokeColor = "rgba(" + COLORS_FOR_SURVEY[$index] + ",1)";
-            window.chartjs[$qid].datasets[0].bars[key].highlightFill = "rgba(" + COLORS_FOR_SURVEY[$index] + ",0.9)";
-        }
-        chartjs[$qid].update();
+    var parsedType = parseType($type);
+    var options = {};
+
+    if (parsedType == 'bar' || parsedType == 'line') {
+        options.scales = {
+            yAxes: [{
+                ticks: {
+                    suggestedMin: 0,
+                }
+            }]
+        };
     }
+
+    console.ls.log("Creating chart with definition: ", dataDefinition);
+
+    window.chartjs[$qid] = new Chart($canvas, {
+        type: parsedType,
+        data: dataDefinition,
+        options: options,
+    });
 }
 
 /**
@@ -132,39 +173,60 @@ function init_chart_js_graph_with_datas($type, $qid) {
     if ($statistics == undefined) return;
     var $labels = $statistics.labels
     var $grawdata = $statistics.grawdata
-    var $chartDef = new Array();
+    var $chartDef = {
+        labels: $labels,
+        datasets: [{
+            data: [],
+            backgroundColor: [],
+            hoverBackgroundColor: [],
+        }],
+    };
+    var $max = 0;
 
-    $('#legend-no-percent-' + $qid).hide();
-    $('#legend-percent-' + $qid).show();
-    $('#stat-no-answer-' + $qid).show();
-
-    $.each($labels, function ($i, $label) {
-        $colori = (parseInt($i) + $color);
-        $chartDef[$i] = {
-            value: $grawdata[$i],
-            color: "rgba(" + COLORS_FOR_SURVEY[$colori] + ",0.6)",
-            highlight: "rgba(" + COLORS_FOR_SURVEY[$colori] + ",0.9)",
-            label: $label,
-        };
+    $.each($labels, function($i, $label) {
+        $max = $max + parseInt($grawdata[$i]);
     });
 
+    $.each($labels, function ($i, $label) {
+        var colorIndex = (parseInt($i) + $color);
+        $chartDef.datasets[0].data.push(Math.round($grawdata[$i]/$max * 100 * 100) / 100);
+        $chartDef.datasets[0].backgroundColor.push("rgba(" + COLORS_FOR_SURVEY[colorIndex] + ",0.6)");
+        $chartDef.datasets[0].hoverBackgroundColor.push("rgba(" + COLORS_FOR_SURVEY[colorIndex] + ",0.9)");
+    });
+
+    var parsedType = parseType($type);
     var $options = {
         tooltipTemplate: "<%if (label){%><%=label %>: <%}%><%= value + '%' %>",
     };
+
+    if (parsedType == 'bar' || parsedType == 'line') {
+        options.scales = {
+            yAxes: [{
+                ticks: {
+                    suggestedMin: 0,
+                }
+            }]
+        };
+    }
 
     if (typeof chartjs != "undefined") {
         if (typeof chartjs[$qid] != "undefined") {
             window.chartjs[$qid].destroy();
         }
     }
+    
+    console.ls.log("Creating chart with definition: ", $chartDef);
 
-    window.chartjs[$qid] = new Chart($canvas)[$type](
-        $chartDef,
-        $options
-    );
+    window.chartjs[$qid] = new Chart($canvas, {
+        type: parsedType,
+        data: $chartDef,
+        options: $options
+    });
 }
 
-LS.onDocumentReady.Statistics2 = function () {
+LS.Statistics2 = function () {
+
+    Chart.defaults.global.legend.display = false;
 
     if ($('#completionstateSimpleStat').length > 0) {
         $actionUrl = $('#completionstateSimpleStat').data('grid-display-url');
@@ -246,7 +308,7 @@ LS.onDocumentReady.Statistics2 = function () {
             $qid = $(this).data('qid');
 
             // chartjs
-            if ($type == 'Bar' || $type == 'Radar' || $type == 'Line') {
+            if ($type === 'Bar' || $type === 'Radar' || $type === 'Line' || $type === 'Doughnut' || $type === 'Pie' || $type === 'PolarArea') {
                 init_chart_js_graph_with_datasets($type, $qid);
             } else {
                 init_chart_js_graph_with_datas($type, $qid);
@@ -758,7 +820,7 @@ var exportImages = function () {
 };
 
 $(document).on('ready  pjax:scriptcomplete', function () {
-    LS.onDocumentReady.Statistics2();
+    LS.Statistics2();
     $('body').addClass('onStatistics');
     var exportImagesButton = $('#statisticsExportImages');
     exportImagesButton.on('click', exportImages);
@@ -793,4 +855,4 @@ $(document).on('ready  pjax:scriptcomplete', function () {
     });
 });
 
-$(document).on('triggerReady', LS.onDocumentReady.Statistics2);
+$(document).on('triggerReady', LS.Statistics2);

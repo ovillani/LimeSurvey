@@ -5,7 +5,7 @@
 
 /* Note: The child selector is necessary to not affect date time picker */
  #responses-grid > table > thead > tr > th {
-     min-width: 120px;
+     min-width: 125px;
      text-align: center;
  }
 
@@ -30,9 +30,17 @@
     text-align: left;
 }
 
+#responses-grid #responses-column-filter-select {
+    height: 200px;
+}
+
+#responses-grid #responses-column-filter-button {
+    margin-left: 3px;
+}
 
 /*!
  * Style for browsing response : in jqgrid
+ * TODO: Is not in use anymore
  */
 
 #gview_displayresponses th .qcode {

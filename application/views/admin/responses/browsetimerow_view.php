@@ -39,8 +39,8 @@
         'itemsCssClass' => 'table-striped',
         'htmlOptions' => array('class' => 'time-statistics-table'),
 
-        'ajaxUpdate' => true,
-        'afterAjaxUpdate' => 'doToolTip',
+        'ajaxUpdate' => 'time-grid',
+        'afterAjaxUpdate' => 'window.LS.doToolTip',
 
         // Number of row per page selection
         'summaryText'=>gT('Displaying {start}-{end} of {count} result(s).').' '. sprintf(gT('%s rows per page'),

@@ -1,8 +1,12 @@
 <?php
 $aReplacementData=array();
+
+/** @deprecated this view is deprecated and not used anymore... "question_topbar.php" is used instead
+    @deprecated don't delete it now (maybe we will reuse after vue.js is deleted ...)
+ */
 ?>
 
-<div class='menubar surveybar' id="questionbarid">
+<div class='menubar surveybar' id="questionbarid" style="display:none">
     <div class='row container-fluid'>
 
         <?php if(isset($questionbar['buttons']['view'])):?>
@@ -102,15 +106,6 @@ $aReplacementData=array();
             <?php endif; ?>
 
 
-            <!-- Edit button -->
-            <?php if(Permission::model()->hasSurveyPermission($surveyid,'surveycontent','update')): ?>
-                <a class="btn btn-default" href='<?php echo $this->createUrl("admin/questions/sa/editquestion/surveyid/".$surveyid."/gid/".$gid."/qid/".$qid); ?>' role="button">
-                    <span class="icon-edit"></span>
-                    <?php eT("Edit");?>
-                </a>
-            <?php endif; ?>
-
-
             <!-- Check logic -->
             <?php if(Permission::model()->hasSurveyPermission($surveyid,'surveycontent','read')): ?>
                 <a class="btn btn-default pjax" href="<?php echo $this->createUrl("admin/expressions/sa/survey_logic_file/sid/{$surveyid}/gid/{$gid}/qid/{$qid}/"); ?>" role="button">
@@ -122,20 +117,20 @@ $aReplacementData=array();
 
             <!-- Delete -->
             <?php if( $activated != "Y" && Permission::model()->hasSurveyPermission($surveyid,'surveycontent','delete' )):?>
-                <a class="btn btn-default"
+                <button class="btn btn-default"
                    data-toggle="modal"
-                   data-href="<?php echo $this->createUrl("admin/questions/sa/delete/surveyid/$surveyid/qid/$qid"); ?>"
                    data-target="#confirmation-modal"
+                   data-onclick='<?php echo convertGETtoPOST(Yii::app()->createUrl("questionAdministration/delete/", ["qid" => $qid])); ?>'
                    data-message="<?php eT("Deleting this question will also delete any answer options and subquestions it includes. Are you sure you want to continue?","js"); ?>"
                    >
                     <span class="fa fa-trash text-danger"></span>
                     <?php eT("Delete"); ?>
-                </a>
+                </button>
             <?php elseif (Permission::model()->hasSurveyPermission($surveyid,'surveycontent','delete')): ?>
-                <a class="btn btn-default readonly btntooltip" href="#" role="button" data-toggle="tooltip" data-placement="bottom" title="<?php eT("You can't delete a question if the survey is active."); ?>">
+                <button class="btn btn-default btntooltip" disabled data-toggle="tooltip" data-placement="bottom" title="<?php eT("You can't delete a question if the survey is active."); ?>">
                     <span class="fa fa-trash text-danger"></span>
                     <?php eT("Delete"); ?>
-                </a>
+                </button>
                 <?php // NB: Don't show delete button if user has no delete permission. ?>
             <?php endif; ?>
 
@@ -171,30 +166,9 @@ $aReplacementData=array();
                 </a>
             <?php endif;?>
 
-
-            <!-- subquestions -->
-            <?php if(Permission::model()->hasSurveyPermission($surveyid,'surveycontent','update')):?>
-                <?php if($qtypes[$qrrow['type']]['subquestions'] >0):?>
-                    <a id="adminpanel__topbar--selectorAddSubquestions" class="btn btn-default pjax" href="<?php echo $this->createUrl('admin/questions/sa/subquestions/surveyid/'.$surveyid.'/gid/'.$gid.'/qid/'.$qid); ?>" role="button">
-                        <span class="icon-defaultanswers"></span>
-                        <?php eT("Edit subquestions "); ?>
-                    </a>
-                <?php endif;?>
-            <?php endif;?>
-
-
-            <!-- Answer Options -->
-            <?php if( Permission::model()->hasSurveyPermission($surveyid,'surveycontent','update') && $qtypes[$qrrow['type']]['answerscales'] > 0 ):?>
-                <a id="adminpanel__topbar--selectorAddAnswerOptions" class="btn btn-default pjax" href="<?php echo $this->createUrl('admin/questions/sa/answeroptions/surveyid/'.$surveyid.'/gid/'.$gid.'/qid/'.$qid); ?>" role="button">
-                    <span class="icon-defaultanswers"></span>
-                    <?php eT("Edit answer options "); ?>
-                </a>
-            <?php endif;?>
-
-
             <!-- Default Values -->
-            <?php if(Permission::model()->hasSurveyPermission($surveyid,'surveycontent','read') && $qtypes[$qrrow['type']]['hasdefaultvalues'] >0):?>
-                    <a class="btn btn-default pjax" href="<?php echo $this->createUrl('admin/questions/sa/editdefaultvalues/surveyid/'.$surveyid.'/gid/'.$gid.'/qid/'.$qid); ?>" role="button">
+            <?php if(Permission::model()->hasSurveyPermission($surveyid,'surveycontent','update') && $qtypes[$qrrow['type']]['hasdefaultvalues'] >0):?>
+                    <a class="btn btn-default pjax" href="<?php echo $this->createUrl('questionAdministration/editdefaultvalues/surveyid/'.$surveyid.'/gid/'.$gid.'/qid/'.$qid); ?>" role="button">
                         <span class="icon-defaultanswers"></span>
                         <?php eT("Edit default answers"); ?>
                     </a>
@@ -228,7 +202,7 @@ $aReplacementData=array();
                     </a>
                 <?php endif;?>
                 
-                <a class="btn btn-default" href="<?php echo $this->createUrl("admin/survey/sa/listquestiongroups/surveyid/{$surveyid}"); ?>" role="button">
+                <a class="btn btn-default" href="<?php echo $this->createUrl("questionGroupsAdministration/listquestiongroups/surveyid/{$surveyid}"); ?>" role="button">
                     <span class="fa fa-saved"></span>
                     <?php eT("Save and close");?>
                 </a>
@@ -254,6 +228,14 @@ $aReplacementData=array();
                 <?php endif;?>
             <?php endif;?>
         </div>
+    <?php else: ?>        
+        <!-- Close -->
+        <?php if(isset($questionbar['closebutton']['url'])):?>
+            <a class="btn btn-danger pull-right margin-left" href="<?php echo $questionbar['closebutton']['url']; ?>" role="button">
+                <span class="fa fa-close"></span>
+                <?php eT("Close");?>
+            </a>
+        <?php endif;?>
     <?php endif; ?>
 
         <?php // TODO: Factor out in own view? ?>

@@ -1,4 +1,5 @@
 <?php
+
 /*
 * LimeSurvey
 * Copyright (C) 2007-2011 The LimeSurvey Project Team / Carsten Schmitz
@@ -39,12 +40,13 @@
 *
 * - elameno
 */
+
 Yii::import('application.helpers.admin.export.*');
 class ExportSurveyResultsService
 {
     /**
      * Hold the available export types
-     * 
+     *
      * @var array
      */
     protected $_exports;
@@ -60,7 +62,7 @@ class ExportSurveyResultsService
      * @return
      * @throws Exception
      */
-    function exportSurvey($iSurveyId, $sLanguageCode, $sExportPlugin, FormattingOptions $oOptions, $sFilter = '')
+    function exportResponses($iSurveyId, $sLanguageCode, $sExportPlugin, FormattingOptions $oOptions, $sFilter = '')
     {
         //Do some input validation.
         if (empty($iSurveyId)) {
@@ -80,8 +82,7 @@ class ExportSurveyResultsService
 
         $iSurveyId = sanitize_int($iSurveyId);
         if ($oOptions->output == 'display') {
-            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-            header("Pragma: public");
+            header("Cache-Control: must-revalidate, no-store, no-cache");
         }
         
         $exports = $this->getExports();
@@ -100,7 +101,7 @@ class ExportSurveyResultsService
         }
 
         $surveyDao = new SurveyDao();
-        $survey = $surveyDao->loadSurveyById($iSurveyId, $sLanguageCode);
+        $survey = $surveyDao->loadSurveyById($iSurveyId, $sLanguageCode, $oOptions);
         $writer->init($survey, $sLanguageCode, $oOptions);
         
         $surveyDao->loadSurveyResults($survey, $oOptions->responseMinRecord, $oOptions->responseMaxRecord, $sFilter, $oOptions->responseCompletionState, $oOptions->selectedColumns, $oOptions->aResponses);
@@ -121,7 +122,7 @@ class ExportSurveyResultsService
     
     /**
      * Get an array of available export types
-     * 
+     *
      * @return array
      */
     public function getExports()

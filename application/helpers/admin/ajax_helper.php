@@ -100,6 +100,7 @@ class AjaxHelper
     {
         header('Content-Type: application/json');
         echo $str;
+        \Yii::app()->end();
     }
 }
 
@@ -146,7 +147,7 @@ class JsonOutput
     public $noPermissionText;
 
     /**
-     * 
+     *
      * @param string|null $result
      */
     public function __construct($result)
@@ -234,7 +235,7 @@ class JsonOutputSuccess extends JsonOutput
 }
 
 /**
- * 
+ *
  */
 class JsonOutputModal extends JsonOutput
 {
@@ -245,7 +246,7 @@ class JsonOutputModal extends JsonOutput
     public $html;
 
     /**
-     * 
+     *
      */
     public function __construct($html)
     {
@@ -254,8 +255,8 @@ class JsonOutputModal extends JsonOutput
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public function __toString()
     {
@@ -275,7 +276,7 @@ class JsonOutputModal extends JsonOutput
 class JsonOutputNotLoggedIn extends JsonOutputModal
 {
     /**
-     * 
+     *
      */
     public function __construct()
     {
@@ -289,7 +290,7 @@ class JsonOutputNotLoggedIn extends JsonOutputModal
         // This should not be possible here
         if (isset($result[0]) && $result[0] == 'success') {
             throw new \CException('Internal error: login form submitted');
-        } else if (isset($result[0]) && $result[0] == 'failed') {
+        } elseif (isset($result[0]) && $result[0] == 'failed') {
             throw new \CException('Internal error: login form submitted');
         }
 

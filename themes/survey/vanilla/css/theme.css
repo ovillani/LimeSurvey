@@ -205,6 +205,7 @@ body {
 {
     display: block;
     clear: both;
+    margin-right: 3rem;
 }
 .question-item .other-label
 {
@@ -285,6 +286,9 @@ body {
     min-height: 50px;
 }
 
+.slider-container {
+    min-height: 15px;
+}
 
 /* Show more the heading in table */
 .ls-answers .ls-heading th{font-weight:700}
@@ -619,10 +623,6 @@ only screen and (max-width: 760px),
 .othertext-label-checkox-container {
     padding-top: 5px;
     margin-right: 5px;
-}
-
-.geoloc-item .search-icon, .geoloc-item .checkbox  {
-    padding-top: 10px;
 }
 
 .geoname_search {

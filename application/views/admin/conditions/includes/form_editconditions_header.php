@@ -21,20 +21,22 @@
             </div>
         </div>
         <!-- Scenario selection -->
-        <div class="row">
+        <div class="row ">
             <!-- Condition -->
-            <div class='form-group col-xs-12'>
-                <label class='control-label'><?php eT('Scenario'); ?></label>
-                <div class='add-scenario-column'>
+            <div class='form-group'>
+                <label class='control-label col-xs-12'><?php eT('Scenario'); ?></label>
+                <div class='add-scenario-column col-xs-12  ls-space padding bottom-15'>
                     <input class='form-control' type='number' name='scenario' id='scenario' value='<?php echo ($addConditionToScenarioNr ? $addConditionToScenarioNr : '1'); ?>' <?php if($showScenario):?> style='display: none;' <?php endif;?>/>
                     <?php if($showScenario):?>
-                        <span id='defaultscenariotxt'>
-                            <?php eT("Default scenario"); ?>
-                        </span>
-                        &nbsp;
-                        <button class='btn btn-default' id='scenarioaddbtn' onclick="scenarioaddbtnOnClickAction(); return false;" >
-                            <span class='icon-add'></span>&nbsp;<?php eT('Add scenario'); ?>
-                        </button>
+                        <div id="defaultscenarioshow" class="col-xs-12">
+                            <span>
+                                <?php eT("Default scenario"); ?>
+                            </span>
+                            &nbsp;
+                            <button class='btn btn-default' onclick="scenarioaddbtnOnClickAction(); return false;" >
+                                <span class='icon-add'></span>&nbsp;<?php eT('Add scenario'); ?>
+                            </button>
+                        </div>
                     <?php endif;?>
                 </div>
             </div>
@@ -90,6 +92,9 @@
                         </div>
                     </div>
                     <div role='tabpanel' class='tab-pane ' id='SRCTOKENATTRS'>
+                        <?php if($surveyIsAnonymized) {
+                            echo CHtml::tag("p",array("class"=>"alert alert-warning"),gT("This is an anonymized survey. Participant attributes can only be used in non-anonymised surveys."));
+                        }?>
                         <div class='form-group question-option'>
                             <div class=''>
                                 <select class='form-control' name='csrctoken' id='csrctoken' size='7'>
@@ -121,7 +126,7 @@
                                 <a href='#PREVQUESTIONS' aria-controls='PREVQUESTIONS' role='tab' data-toggle='tab'><?php eT('Questions'); ?></a>
                             </li>
                             <li role='presentation' class='target-tab'>
-                                <a href='#TOKENATTRS' aria-controls='TOKENATTRS' role='tab' data-toggle='tab'><?php eT('Token fields'); ?></a>
+                                <a href='#TOKENATTRS' aria-controls='TOKENATTRS' role='tab' data-toggle='tab'><?php eT('Participant fields'); ?></a>
                             </li>
                             <li role='presentation' class='target-tab disabled'>
                                 <a href='#REGEXP' aria-controls='REGEXP' role='tab' data-toggle='tab'><?php eT('RegExp'); ?></a>
@@ -162,7 +167,7 @@
                             <div class=''>
                                 <select class='form-control' name='prevQuestionSGQA' id='prevQuestionSGQA' size='7'>
                                     <?php foreach ($cquestions as $cqn): ?>
-                                        <?php if ($cqn[2] != 'M' && $cqn[2] != 'P'): ?>
+                                    <?php if ($cqn[2] != Question::QT_M_MULTIPLE_CHOICE && $cqn[2] != Question::QT_P_MULTIPLE_CHOICE_WITH_COMMENTS): ?>
                                             <!-- Type M or P aren't real fieldnames and thus can't be used in @SGQA@ placehodlers -->
                                             <option
                                                 value='<?php echo '@' . $cqn[3] . '@'; ?>'

@@ -64,7 +64,11 @@ echo viewHelper::getViewTestTag('index');
                                 </ol>
                             </div>
                             <div class="row"><hr/></div>
-                            <?php if(Permission::model()->hasGlobalPermission('surveys','create')) { ?>
+
+                            <?php 
+                            // Hide this until we have fixed the tutorial
+                            // @TODO FIX TUTORIAL
+                            if(Permission::model()->hasGlobalPermission('surveys','create') && 1==2) { ?>
                                 <div class="row" id="selector__welcome-modal--tutorial">
                                     <p><?php eT('Or, try out our interactive tutorial tour'); ?> </p>
                                     <p class="text-center"><button class="btn btn-primary btn-lg" id="selector__welcome-modal--starttour"><?php eT("Start the tour"); ?></button></p>
@@ -74,31 +78,57 @@ echo viewHelper::getViewTestTag('index');
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default" data-dismiss="modal"><?php eT('Close');?></button>
-                      <a href="<?php echo $this->createUrl("admin/survey/sa/newsurvey") ?>" class="btn btn-primary"><?php eT('Create a new survey');?></a>
+                      <a href="<?php echo $this->createUrl("surveyAdministration/newSurvey") ?>" class="btn btn-primary"><?php eT('Create a new survey');?></a>
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
 
-
-
-
     <?php endif;?>
 
+    <?php 
+        //Check for IE and show a warning box
+        if (preg_match('~MSIE|Internet Explorer~i', $_SERVER['HTTP_USER_AGENT']) || (strpos($_SERVER['HTTP_USER_AGENT'], 'Trident/7.0') !== false && strpos($_SERVER['HTTP_USER_AGENT'], 'rv:11.0') !== false)) {
+    ?>
+    <div class="container">
+        <div class="alert alert-danger" role="alert" id="warningIE11">
+            <div class="container-fluid">
+                <div class="row">
+                    <h4 class="col-xs-12"><?=gT("Warning!")?></h4>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php eT("You are using Microsoft Internet Explorer."); ?><br/><br/>
+                        <?php eT("LimeSurvey 3.x or newer does not support Internet Explorer for the LimeSurvey administration, anymore. However most of the functionality should still work."); ?><br/>
+                        <?php eT("If you have any issues, please try using a modern browser first, before reporting it.");?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    <?php 
+    }
+    App()->getClientScript()->registerScript('WelcomeCheckIESafety', "
+    if(!/(MSIE|Trident\/)/i.test(navigator.userAgent)) {
+        $('#warningIE11').remove();
+    }
+    ", LSYii_ClientScript::POS_POSTSCRIPT); 
+    ?>
     <!-- Last visited survey/question -->
     <?php if( $bShowLastSurveyAndQuestion && ($showLastSurvey || $showLastQuestion)): // bShowLastSurveyAndQuestion is the homepage setting, showLastSurvey & showLastQuestion are about if infos are available ?>
         <div class="row text-right">
             <div class="col-lg-9 col-sm-9  ">
                 <div class='pull-right'>
                 <?php if($showLastSurvey):?>
-                    <span id="last_survey" class="rotateShown">
+                    <span id="last_survey" class=""> <!-- to enable rotation again set class back to "rotateShown" -->
                     <?php eT("Last visited survey:");?>
-                    <a href="<?php echo $surveyUrl;?>" class=""><?php echo $surveyTitle;?></a>
+                    <a href="<?php echo $surveyUrl;?>" class=""><?php echo viewHelper::flatEllipsizeText($surveyTitle, true, 60);?></a>
                     </span>
                 <?php endif; ?>
 
                 <?php if($showLastQuestion):?>
-                    <span id="last_question" class="rotateHidden">
+                    <span id="last_question" class=""> <!-- to enable rotation again set class back to "rotateHidden" -->
                     <?php eT("Last visited question:");?>
                     <a href="<?php echo $last_question_link;?>" class=""><?php echo viewHelper::flatEllipsizeText($last_question_name, true, 60); ?></a>
                     </span>
@@ -133,16 +163,16 @@ echo viewHelper::getViewTestTag('index');
 
     <!-- Boxes for smartphones -->
     <div class="row  hidden-sm  hidden-md hidden-lg ">
-        <div class="panel panel-primary panel-clickable" id="panel-7" data-url="/limesurvey/LimeSurveyNext/index.php/admin/survey/sa/listsurveys" style="opacity: 1; top: 0px;">
+        <div class="panel panel-primary panel-clickable" id="panel-7" data-url="/limesurvey/LimeSurveyNext/index.php/surveyAdministration//listsurveys" style="opacity: 1; top: 0px;">
             <div class="panel-heading">
                 <div class="panel-title"><?php eT('List surveys');?></div>
             </div>
             <div class="panel-body">
-                <a href='<?php echo $this->createUrl("admin/survey/sa/listsurveys") ?>'>
+                <a href='<?php echo $this->createUrl("surveyAdministration/listsurveys") ?>'>
                     <span class="icon-list" style="font-size: 4em"></span>
             <span class="sr-only"><?php eT('List surveys');?></span>
                 </a><br><br>
-                <a href='<?php echo $this->createUrl("admin/survey/sa/listsurveys") ?>'><?php eT('List surveys');?></a>
+                <a href='<?php echo $this->createUrl("surveyAdministration/listsurveys") ?>'><?php eT('List surveys');?></a>
             </div>
         </div>
 

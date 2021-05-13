@@ -31,7 +31,9 @@ define('OLE_LONG_INT_SIZE',        4);
 define('OLE_PPS_SIZE',          0x80);
 
 if (isset($_REQUEST['homedir'])) {die('You cannot start this script directly');}
-require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'PEAR.php';
+    if (!class_exists('PEAR')) {
+        require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'PEAR.php';
+    }
 require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'PPS.php';
 
 /**
@@ -60,7 +62,7 @@ class OLE extends PEAR
      * Remember to use ampersand when creating an OLE object ($my_ole =& new OLE();)
      * @access public
      */
-    function OLE()
+    public function __construct()
     {
         $this->_list = array();
     }
@@ -309,7 +311,7 @@ class OLE extends PEAR
     {
         $rawname = '';
         for ($i = 0; $i < strlen($ascii); $i++) {
-            $rawname .= $ascii{$i}."\x00";
+            $rawname .= $ascii[$i]."\x00";
         }
         return $rawname;
     }
@@ -381,7 +383,7 @@ class OLE extends PEAR
         $high_part = 0;
         for ($i=0; $i<4; $i++)
         {
-            $al = unpack('C', $string{(7 - $i)});
+            $al = unpack('C', $string[(7 - $i)]);
             $high_part += $al[''];
             if ($i < 3) {
                 $high_part *= 0x100;
@@ -390,7 +392,7 @@ class OLE extends PEAR
         $low_part = 0;
         for ($i=4; $i<8; $i++)
         {
-            $al = unpack('C', $string{(7 - $i)});
+            $al = unpack('C', $string[(7 - $i)]);
             $low_part += $al[''];
             if ($i < 7) {
                 $low_part *= 0x100;

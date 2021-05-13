@@ -15,8 +15,9 @@ LS.CPDB = (function() {
      * @oaram {string} gridViewId
      * @return
      */
-    runBaseModal = function(url, data, actionButtonClass, formId, gridViewId){
+    runBaseModal = function(url, data, actionButtonClass, formId, gridViewId, callback){
 
+        callback = callback || function(){};
         /**
          * @param {object} result
          * @todo
@@ -24,6 +25,7 @@ LS.CPDB = (function() {
         var secondSuccess = function(result) {
             $(baseModal).modal('hide');
             $.fn.yiiGridView.update(gridViewId,{});
+            callback(result);
         };
 
         /**
@@ -37,7 +39,7 @@ LS.CPDB = (function() {
                 e.preventDefault();
                 var action = $(baseModal).find('#'+formId).attr('action');
                 var formData = $(baseModal).find('#'+formId).serializeArray();
-                LS.ajax({
+                return $.ajax({
                     url: action,
                     data: formData,
                     method: 'POST',
@@ -50,7 +52,7 @@ LS.CPDB = (function() {
         };
 
 
-        return LS.ajax({
+        return $.ajax({
             url: url, 
             data: data,
             method: 'POST',
@@ -68,15 +70,13 @@ LS.CPDB = (function() {
     onClickExport = function(all) {
         var postdata = {
             selectedParticipant: [],
-            YII_CSRF_TOKEN : LS.data.csrfToken
-        }; 
+        }; /* csrf is already in ajaxSetup */
 
         if (!all) {
             $('.selector_participantCheckbox:checked').each(function(i,item){
                 postdata.selectedParticipant.push($(item).val());
             });
         }
-
         $.ajax({
             url: exporttocsvcountall,
             data: postdata,
@@ -113,6 +113,11 @@ LS.CPDB = (function() {
                             var dlForm = $("<form></form>")
                                 .attr('action', exportToCSVURL)
                                 .attr('method', "POST");
+                            /* add crsf sice where out of ajax here */
+                            $('<input />')
+                                .attr('name', LS.data.csrfTokenName)
+                                .attr('value', LS.data.csrfToken)
+                                .appendTo(dlForm);
                             $.each(dldata, function(key,value){
                                 $('<input />')
                                     .attr('name', key)
@@ -147,7 +152,7 @@ LS.CPDB = (function() {
                 //data can be string of parameters or array/object
                 data = typeof data == 'string' ? data : jQuery.param(data);
                 //split params into form inputs
-                var inputs = '<input type="hidden" name="YII_CSRF_TOKEN" value="'+LS.data.csrfToken+'">';
+                var inputs = '<input type="hidden" name="'+LS.data.csrfTokenName+'" value="'+LS.data.csrfToken+'">';
                 jQuery.each(data.split('&'), function(){
                     var pair = this.split('=');
                     inputs+='<input type="hidden" name="'+ pair[0] +'" value="'+ pair[1] +'">';
@@ -170,7 +175,7 @@ LS.CPDB = (function() {
             return false;
         });
 
-        $('.action_participant_editModal').on('click', function(e){
+        $('#list_central_participants').on('click', '.action_participant_editModal', function(e){
             e.preventDefault();
             var data = {modalTarget: 'editparticipant', 'participant_id' : $(this).closest('tr').data('participant_id')};
             //url, data, idString, actionButtonClass, formId, gridViewId
@@ -180,13 +185,14 @@ LS.CPDB = (function() {
                 'action_save_modal_editParticipant',
                 'editPartcipantActiveForm', 
                 'list_central_participants' 
-            ).done(function() {
+            ).done(function(result) {
+                console.ls.log(result);
                 var val = $('#participantPanel_edit_modal .ls-bootstrap-switch').attr('checked');
                 $('.ls-bootstrap-switch').bootstrapSwitch('state', val == 'checked');
             });
         });
 
-        $('.action_participant_deleteModal').on('click', function(e) {
+        $('#list_central_participants').on('click', '.action_participant_deleteModal', function(e) {
             e.preventDefault();
             var data = {modalTarget: 'showdeleteparticipant', 'participant_id' : $(this).closest('tr').data('participant_id')};
             //url, data, idString, actionButtonClass, formId, gridViewId
@@ -198,7 +204,7 @@ LS.CPDB = (function() {
                     'list_central_participants' 
                     );
         });
-        $('.action_participant_infoModal').on('click', function(e) {
+        $('#list_central_participants').on('click', '.action_participant_infoModal', function(e) {
             e.preventDefault();
             var data = {
                 modalTarget: 'showparticipantsurveys',
@@ -213,7 +219,7 @@ LS.CPDB = (function() {
                     'list_central_participants' 
                     );
         });
-        $('.action_participant_shareParticipant').on('click', function(e) {
+        $('#list_central_participants').on('click', '.action_participant_shareParticipant', function(e) {
             e.preventDefault();
             var data = {modalTarget: 'shareparticipant', 'participant_id' : $(this).closest('tr').data('participant_id')};
             //url, data, idString, actionButtonClass, formId, gridViewId
@@ -239,8 +245,15 @@ LS.CPDB = (function() {
                 data,
                 'action_save_modal_editParticipant',
                 'editPartcipantActiveForm',
-                'list_central_participants'
-            ).done(function() {
+                'list_central_participants',
+                function(result) {
+                    console.ls.log(result);
+                    if(!result.error) {
+                        window.LS.notifyFader(result.success, 'well-lg text-center bg-primary');
+                    }
+                }
+            ).done(function(result) {
+                console.ls.log(result);
                 $('.ls-bootstrap-switch').bootstrapSwitch();
             });
         });
@@ -248,7 +261,7 @@ LS.CPDB = (function() {
         /**
          * Small icon, add participant to a survey
          */
-        $('.action_participant_addToSurvey').on('click', function(e) {
+        $('#list_central_participants').on('click', '.action_participant_addToSurvey', function(e) {
             var data = {
                 modalTarget: 'addToSurvey',
                 participant_id: $(this).closest('tr').data('participant_id')
@@ -311,7 +324,13 @@ LS.CPDB = (function() {
                 data,
                 'action_save_modal_editAttributeName',
                 'editAttributeNameActiveForm', 
-                'list_attributes' 
+                'list_attributes',
+                function(result) {
+                    console.ls.log(result);
+                    if(!result.error) {
+                        window.LS.notifyFader(result.success, 'well-lg text-center bg-primary');
+                    }
+                }
             ); 
         });
         $('.action_attributeNames_editModal').on('click', function(e){
@@ -343,6 +362,25 @@ LS.CPDB = (function() {
                 }
             })
         });
+
+        $('.action_changeAttributeEncrypted').bootstrapSwitch();
+        $('.action_changeAttributeEncrypted').on('switchChange.bootstrapSwitch', function(event,state){
+            var self = this;
+            $.ajax({
+                url: editValueParticipantPanel, 
+                method: "POST",
+                data: { actionTarget: 'changeAttributeEncrypted', 'attribute_id': $(self).closest('tr').data('attribute_id'), 'encrypted': state},
+                dataType: 'json', 
+                success: function(resolve){
+                    $(self).prop("checked", (resolve.newValue == "Y"));
+                }
+            })
+        });
+
+        $('#pageSizeAttributes').on("change", function(){
+            $.fn.yiiGridView.update('list_attributes',{ data:{ pageSizeAttributes: $(this).val() }});
+        });
+
         if(!$('#export').hasClass('hidden')){
             $('#export').addClass('hidden');
         }
@@ -360,12 +398,12 @@ LS.CPDB = (function() {
             $.ajax({
                 url: editValueParticipantPanel, 
                 method: "POST",
-                data: {actionTarget: 'changeSharedEditableStatus', 'participant_id': $(self).closest('tr').data('participant_id'), 'can_edit': state},
+                data: {actionTarget: 'changeSharedEditableStatus', 'participant_id': $(self).closest('tr').data('participant_id'), 'can_edit': state, 'share_uid': $(self).closest('tr').data('share_uid')},
                 dataType: 'json', 
                 success: function(resolve){
                     $(self).prop("checked", resolve.newValue);
                 }
-            })
+            });
         });
 
         $('#pageSizeShareParticipantView').on("change", function(){
@@ -435,7 +473,7 @@ LS.CPDB = (function() {
      * @return
      */
     deleteSingleParticipantShare = function(url) {
-        LS.ajax({
+        $.ajax({
             url: url,
             method: "GET",
             dataType: 'json',
@@ -450,6 +488,8 @@ LS.CPDB = (function() {
      * @return
      */
     bindButtons = function() {
+
+        $(document).trigger("actions-updated");
         basics();
         switch($('#locator').data('location')){
             case 'participants' : participantPanel(); break;
@@ -463,8 +503,7 @@ LS.CPDB = (function() {
          */
         $('#export').click(function() { onClickExport(true); });
 
-        doToolTip();
-        $(document).trigger('pjax:refresh');
+        window.LS.doToolTip();
     };
 
     return {
@@ -495,7 +534,7 @@ function rejectParticipantShareAjax(participant_id){
             method: "POST",
             dataType: 'json',
             success: function(result){
-                notifyFader(result.successMessage, 'well-lg bg-primary text-center');
+                window.LS.notifyFader(result.successMessage, 'well-lg bg-primary text-center');
                 $.fn.yiiGridView.update('share_central_participants',{});
             }
         })
@@ -514,7 +553,7 @@ function deleteAttributeAjax(attribute_id){
             method: "POST",
             dataType: 'json',
             success: function(result){
-                notifyFader(result.successMessage, 'well-lg bg-primary text-center');
+                window.LS.notifyFader(result.successMessage, 'well-lg bg-primary text-center');
                 $.fn.yiiGridView.update('list_attributes',{});
             }
         })

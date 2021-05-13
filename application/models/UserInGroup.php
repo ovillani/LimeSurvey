@@ -1,6 +1,5 @@
-<?php if (!defined('BASEPATH')) {
-    die('No direct script access allowed');
-}
+<?php
+
 /*
  * LimeSurvey
  * Copyright (C) 2007-2011 The LimeSurvey Project Team / Carsten Schmitz
@@ -19,7 +18,7 @@
  * @property integer $ugid UserGroup ID
  * @property int $uid User ID
  *
- *
+ *@property User $users Group ownre user
  */
 class UserInGroup extends LSActiveRecord
 {
@@ -46,36 +45,30 @@ class UserInGroup extends LSActiveRecord
     }
 
     /** @inheritdoc */
+    public function rules()
+    {
+        return array(
+            array('uid, ugid', 'required'),
+            array('uid, ugid', 'numerical', 'integerOnly' => true),
+        );
+    }
+
+    /** @inheritdoc */
     public function relations()
     {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
             // TODO should be singular
-            'users' => array(self::BELONGS_TO, 'User', '', 'on' => 't.uid = users.uid')
+            'users' => array(self::BELONGS_TO, 'User', 'uid'),
+            'group' => array(self::BELONGS_TO, 'UserGroup', 'ugid'),
         );
-    }
-
-    /**
-     * @param mixed $condition
-     * @return static[]
-     */
-    public function getAllRecords($condition = false)
-    {
-        $criteria = new CDbCriteria;
-
-        if ($condition != false) {
-            foreach ($condition as $item => $value) {
-                $criteria->addCondition($item.'='.Yii::app()->db->quoteValue($value));
-            }
-        }
-        $data = $this->findAll($criteria);
-        return $data;
     }
 
     /**
      * @param array $data
      * @return bool
+     * @deprecated at 2018-02-03 use $model->attributes = $data && $model->save()
      */
     public function insertRecords($data)
     {
@@ -111,5 +104,4 @@ class UserInGroup extends LSActiveRecord
         $data = $user->queryRow();
         return $data;
     }
-
 }

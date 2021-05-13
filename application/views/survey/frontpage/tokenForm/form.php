@@ -6,7 +6,7 @@
 ?>
 <div class=''>
     <div class='form-group'>
-        <label class='control-label col-sm-3' for='loadname'><?php echo gT("Token:") ?><?php $this->renderPartial('/survey/system/required',array());?></label>
+        <label class='control-label col-sm-3' for='loadname'><?php echo gT("Access code:") ?><?php $this->renderPartial('/survey/system/required',array());?></label>
         <div class='col-sm-7 load-survey-input input-cell'>
             <?php if(!isset($token)): ?>
                 <input class='form-control' type='password' id='token' name='token' value='' required>
@@ -31,7 +31,7 @@
                           <?php $this->widget('CCaptcha',array(
                               'buttonOptions'=>array('class'=> 'btn btn-xs btn-info'),
                               'buttonType' => 'button',
-                              'buttonLabel' => gt('Reload image','unescaped')
+                              'buttonLabel' => gT('Reload image','unescaped')
                           )); ?>
                     </div>
                     <input class='form-control' type='text' size='15' maxlength='15' id='loadsecurity' name='loadsecurity' value='' alt='' required>

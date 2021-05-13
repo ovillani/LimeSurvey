@@ -22,10 +22,10 @@ if ($oQuota->action == Quota::ACTION_TERMINATE){
         <div class="pull-right small">
             <span><span class="fa <?php echo $icon?>"></span> <?php echo $tooltip;?></span>
             <?php if($oQuota->autoload_url == 1):?>
-                <span><span class="fa fa-external-link"></span> <?php echo gT('Autoload URL:').' '.htmlentities($oQuota->mainLanguagesetting->quotals_url);?>"</span>
+                <span><span class="fa fa-external-link"></span> <?php echo gT('Autoload URL:').' '.htmlentities($oQuota->mainLanguagesetting->quotals_url);?></span>
             <?php endif;?>
         </div>
-        <?php echo viewHelper::flatEllipsizeText($oQuota->name) ;?>
+        <?php echo htmlentities(viewHelper::flatEllipsizeText($oQuota->name)) ;?>
     </div>
     <table class="table table-quota-items table-striped table-condensed" >
         <thead>
@@ -51,7 +51,9 @@ if ($oQuota->action == Quota::ACTION_TERMINATE){
                 <?php foreach($aQuotaItems[$oQuota->id] as $aQuotaItem){
                     $this->renderPartial('/admin/quotas/viewquotas_quota_members_item',array(
                         'oQuotaMember'=>$aQuotaItem['oQuotaMember'],
-                        'data'=>$aQuotaItem));
+                        'data'=>$aQuotaItem,
+                        'sBaseLang'=>$oSurvey->language)
+                    );
                 }?>
             <?php } else {?>
                 <tr><td class="text-danger" colspan="3"><?php eT("No answers have been set for this quota.");?></td></tr>

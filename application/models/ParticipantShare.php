@@ -1,4 +1,5 @@
 <?php
+
 /*
  * LimeSurvey
  * Copyright (C) 2007-2011 The LimeSurvey Project Team / Carsten Schmitz
@@ -11,6 +12,9 @@
  * See COPYRIGHT.php for copyright notices and details.
  *
  */
+
+use ls\ajax\AjaxHelper;
+
 /**
  * This is the model class for table "{{participant_shares}}".
  *
@@ -54,12 +58,12 @@ class ParticipantShare extends LSActiveRecord
         // will receive user inputs.
         return array(
             array('participant_id, share_uid, date_added, can_edit', 'required'),
-            array('share_uid', 'numerical', 'integerOnly'=>true),
-            array('participant_id', 'length', 'max'=>50),
-            array('can_edit', 'length', 'max'=>5),
+            array('share_uid', 'numerical', 'integerOnly' => true),
+            array('participant_id', 'length', 'max' => 50),
+            array('can_edit', 'length', 'max' => 5),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('participant_id, participant.firstname, participant.lastname, participant.email, share_uid, date_added, can_edit', 'safe', 'on'=>'search'),
+            array('participant_id, participant.firstname, participant.lastname, participant.email, share_uid, date_added, can_edit', 'safe', 'on' => 'search'),
         );
     }
 
@@ -69,10 +73,10 @@ class ParticipantShare extends LSActiveRecord
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
-            'participant' => array(self::HAS_ONE, 'Participant', array('participant_id' => 'participant_id')), 
+            'participant' => array(self::HAS_ONE, 'Participant', array('participant_id' => 'participant_id')),
             'shared_by' => array(self::HAS_ONE, 'User', array('uid' => 'share_uid')),
             'surveylinks' => array(self::HAS_ONE, 'SurveyLink', 'participant_id'),
-            'participantAttributes' => array(self::HAS_MANY, 'ParticipantAttribute', 'participant_id', 'with'=>'participant_attribute_names', 'joinType'=> 'LEFT JOIN')
+            'participantAttributes' => array(self::HAS_MANY, 'ParticipantAttribute', 'participant_id', 'with' => 'participant_attribute_names', 'joinType' => 'LEFT JOIN')
         );
     }
 
@@ -133,7 +137,7 @@ class ParticipantShare extends LSActiveRecord
     {
         $loggedInUser = yii::app()->user->getId();
         if ($this->participant->owner_uid == $loggedInUser) {
-            $inputHtml = "<input type='checkbox' data-size='small' data-off-color='warning' data-on-color='primary' data-off-text='".gT('No')."' data-on-text='".gT('Yes')."' class='action_changeEditableStatus' "
+            $inputHtml = "<input type='checkbox' data-size='small' data-off-color='warning' data-on-color='primary' data-off-text='" . gT('No') . "' data-on-text='" . gT('Yes') . "' class='action_changeEditableStatus' "
             . ($this->can_edit ? "checked" : "")
             . "/>";
             return  $inputHtml;
@@ -152,7 +156,6 @@ class ParticipantShare extends LSActiveRecord
         $isOwner = $this->participant->owner_uid == $userId;
         $isSuperAdmin = Permission::model()->hasGlobalPermission('superadmin', 'read');
         if ($isOwner || $isSuperAdmin) {
-
             $url = Yii::app()->createUrl(
                 'admin/participants/sa/deleteSingleParticipantShare',
                 array(
@@ -161,7 +164,7 @@ class ParticipantShare extends LSActiveRecord
                 )
             );
 
-            return "<a href='#' data-toggle='modal' data-target='#confirmation-modal' data-onclick='(function() { LS.CPDB.deleteSingleParticipantShare(\"".$url."\"); })'>"
+            return "<a href='#' data-toggle='modal' data-target='#confirmation-modal' data-onclick='(function() { LS.CPDB.deleteSingleParticipantShare(\"" . $url . "\"); })'>"
                 . "<button class='btn btn-xs btn-default action_delete_shareParticipant'><i class='fa fa-trash text-danger'></i></button>"
                 . "</a>";
         } else {
@@ -181,10 +184,10 @@ class ParticipantShare extends LSActiveRecord
         $isSuperAdmin = Permission::model()->hasGlobalPermission('superadmin', 'read');
 
         // Primary key for ParticipantShare
-        $participantIdAndShareUid = $this->participant_id.','.$this->share_uid;
+        $participantIdAndShareUid = $this->participant_id . ',' . $this->share_uid;
 
         if ($isOwner || $isSuperAdmin) {
-            $html = "<input type='checkbox' class='selector_participantShareCheckbox' name='selectedParticipantShare[]' value='".$participantIdAndShareUid."' >";
+            $html = "<input type='checkbox' class='selector_participantShareCheckbox' name='selectedParticipantShare[]' value='" . $participantIdAndShareUid . "' >";
         } else {
             $html = '';
         }
@@ -229,6 +232,7 @@ class ParticipantShare extends LSActiveRecord
             array(
                 "name" => 'share_uid',
                 "value" => '$data->sharedBy',
+                "type" => 'raw',
                 "header" => gT("Shared by"),
                 "filter" => $this->getSharedByList($this->share_uid)
             ),
@@ -245,12 +249,11 @@ class ParticipantShare extends LSActiveRecord
                 "name" => 'can_edit',
                 "value" => '$data->getCanEditHtml()',
                 "header" => gT("Can edit?"),
-                "filter" => array(1 => gT('Yes'), 0=> gT('No')),
-                "type" =>"raw"
+                "filter" => array(1 => gT('Yes'), 0 => gT('No')),
+                "type" => "raw"
             ),
         );
         return $cols;
-
     }
     /**
      * Retrieves a list of models based on the current search/filter conditions.
@@ -260,31 +263,31 @@ class ParticipantShare extends LSActiveRecord
     {
         // Warning: Please modify the following code to remove attributes that
         // should not be searched.
-        $sort = new CSort;
+        $sort = new CSort();
         $sortAttributes = array(
-            'participant.firstname'=>array(
-                'asc'=>'participant.firstname asc',
-                'desc'=>'participant.firstname desc',
+            'participant.firstname' => array(
+                'asc' => 'participant.firstname asc',
+                'desc' => 'participant.firstname desc',
             ),
-            'participant.lastname'=>array(
-                'asc'=>'participant.lastname asc',
-                'desc'=>'participant.lastname desc',
+            'participant.lastname' => array(
+                'asc' => 'participant.lastname asc',
+                'desc' => 'participant.lastname desc',
             ),
-            'participant.email'=>array(
-                'asc'=>'participant.email asc',
-                'desc'=>'participant.email desc',
+            'participant.email' => array(
+                'asc' => 'participant.email asc',
+                'desc' => 'participant.email desc',
             ),
-            'share_uid'=>array(
-                'asc'=>'shared_by.full_name asc',
-                'desc'=>'shared_by.full_name desc',
+            'share_uid' => array(
+                'asc' => 'shared_by.full_name asc',
+                'desc' => 'shared_by.full_name desc',
             ),
-            'date_added'=>array(
-                'asc'=>'date_added asc',
-                'desc'=>'date_added desc',
+            'date_added' => array(
+                'asc' => 'date_added asc',
+                'desc' => 'date_added desc',
             ),
-            'can_edit'=>array(
-                'asc'=>'can_edit asc',
-                'desc'=>'can_edit desc',
+            'can_edit' => array(
+                'asc' => 'can_edit asc',
+                'desc' => 'can_edit desc',
             ),
         );
         $sort->attributes = $sortAttributes;
@@ -292,7 +295,7 @@ class ParticipantShare extends LSActiveRecord
 
         $participantFilter = Yii::app()->request->getPost('Participant');
 
-        $criteria = new CDbCriteria;
+        $criteria = new CDbCriteria();
         $criteria->with = array('participant', 'shared_by');
 
         // This condition is necessary to filter out participants that got deleted, but the share entry is not
@@ -306,8 +309,8 @@ class ParticipantShare extends LSActiveRecord
         $criteria->compare('participant.email', $participantFilter['email'], true);
 
         $pageSize = Yii::app()->user->getState('pageSizeShareParticipantView', Yii::app()->params['defaultPageSize']);
-        return new CActiveDataProvider($this, array(
-            'criteria'=>$criteria,
+        return new LSCActiveDataProvider($this, array(
+            'criteria' => $criteria,
             'sort' => $sort,
             'pagination' => array(
                 'pageSize' => $pageSize
@@ -317,19 +320,33 @@ class ParticipantShare extends LSActiveRecord
 
     /**
      * @param array $data
+     * @param array $permission
+     *
      * @return void
+     * @throws CException
      */
-    public function storeParticipantShare($data)
+    public function storeParticipantShare($data, $permission)
     {
-        $ownerid = Yii::app()->db->createCommand()->select('*')->from('{{participants}}')->where('participant_id = :participant_id')->bindParam(":participant_id", $data['participant_id'], PDO::PARAM_STR)->queryRow();
-        // CHeck if share already exists
-        $arShare = $this->findByPk(array('participant_id'=>$data['participant_id'], 'share_uid'=>$data['share_uid']));
-        if ($ownerid['owner_uid'] == $data['share_uid']) {
+        $hasUpdatePermission = isset($permission['hasUpdatePermission']) ? $permission['hasUpdatePermission'] : false;
+        $isSuperAdmin = isset($permission['isSuperAdmin']) ? $permission['isSuperAdmin'] : false;
+        $userId = App()->user->getId();
+        $ownerid = App()->db->createCommand()->select('*')->from('{{participants}}')->where('participant_id = :participant_id')->bindParam(":participant_id", $data['participant_id'], PDO::PARAM_STR)->queryRow();
+
+        // Check if share already exists
+        $arShare = $this->findByPk(['participant_id' => $data['participant_id'], 'share_uid' => $data['share_uid']]);
+        $canEditShared = $this->canEditSharedParticipant($data['participant_id']);
+        $isOwner = $ownerid['owner_uid'] == $userId;
+
+        if ($ownerid['owner_uid'] == $data['share_uid'] || (!$permission && !$canEditShared && !$isOwner && !$isSuperAdmin && !$hasUpdatePermission)) {
+            ls\ajax\AjaxHelper::outputNoPermission();
             return;
         }
         if (is_null($arShare)) {
-// A check to ensure that the participant is not added to it's owner
-            Yii::app()->db->createCommand()->insert('{{participant_shares}}', $data);
+            // A check to ensure that the participant is not added to it's owner
+            $oParticipantShare = new ParticipantShare();
+            $oParticipantShare->setAttributes($data);
+            $oParticipantShare->save();
+
         } else {
             $this->updateShare($data);
         }
@@ -343,14 +360,13 @@ class ParticipantShare extends LSActiveRecord
     {
         if (strpos($data['participant_id'], '--') !== false) {
             list($participantId, $shareuid) = explode("--", $data['participant_id']);
-            $data = array("participant_id"=>$participantId, "share_uid"=>$shareuid, "can_edit"=>$data['can_edit']);
+            $data = array("participant_id" => $participantId, "share_uid" => $shareuid, "can_edit" => $data['can_edit']);
         }
-        $criteria = new CDbCriteria;
-        $criteria->addCondition("participant_id = '{$data['participant_id']}'");
-        $criteria->addCondition("share_uid = '{$data['share_uid']}' ");
+        $criteria = new CDbCriteria();
+        $criteria->addColumnCondition(['participant_id'=>$data['participant_id'],'share_uid'=>$data['share_uid']]);
         ParticipantShare::model()->updateAll($data, $criteria);
     }
-    
+
     /**
      * @param string $rows Comma-separated list of something
      * @return void
@@ -376,4 +392,26 @@ class ParticipantShare extends LSActiveRecord
         return $this->participant->owner->full_name;
     }
 
+    /**
+     * Returns true if the user is allowed to edit the participant
+     *
+     * @param $participent_id
+     *
+     * @return boolean
+     */
+    public function canEditSharedParticipant($participent_id)
+    {
+        $participent = $this->findByAttributes(
+            ['participant_id' => $participent_id],
+            'can_edit = :can_edit AND share_uid = :userid',
+            [
+                ':userid' => App()->user->id,
+                ':can_edit' => '1'
+            ]
+        );
+        if ($participent) {
+            return true;
+        }
+        return false;
+    }
 }

@@ -31,13 +31,13 @@
                     type="text"
                  />
 
-            <div class="input-group-addon checkbox-item">
-                <input
-                    type="checkbox"
-                    id="restrictToExtent_{{ name }}"
-                    />
+            <div class="input-group-addon checkbox">
                     <label for="restrictToExtent_{{ name }}">
-                        {{ gT("Restrict search place to map extent") }}
+                    <input
+                        type="checkbox"
+                        id="restrictToExtent_{{ name }}"
+                        />
+                        {{ gT("Restrict search to map extent") }}
                     </label>
             </div>
         </div>

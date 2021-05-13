@@ -83,10 +83,10 @@ echo viewHelper::getViewTestTag('usersIndex');
                  <?php echo CHtml::form(array('admin/user/sa/adduser'), 'post', array('class'=>''));?>
                     <?php if (App()->getPluginManager()->isPluginActive('AuthLDAP')) {
                         echo "<div class=\"form-group\">";
-                          echo "<label  class='col-md-4 control-label'>";
+                          echo "<label  class='control-label'>";
                             eT("Central database");
                           echo "</label>";
-                          echo "<div class='col-md-8'>";
+                          echo "<div class=''>";
                             echo CHtml::dropDownList('user_type',
                                 'DB',
                                 array(
@@ -107,7 +107,7 @@ echo viewHelper::getViewTestTag('usersIndex');
                     <div class="form-group">
                         <label for="new_user" class="control-label"><?php eT("Username:");?></label>
                         <div class="">
-                            <input type='text' class="text input-sm form-control" id='new_user' name='new_user' required />
+                            <input type='text' class="text input-sm form-control" maxlength='64' id='new_user' name='new_user' required />
                         </div>
                     </div>
                     <div class="form-group">
@@ -119,7 +119,7 @@ echo viewHelper::getViewTestTag('usersIndex');
                     <div class="form-group">
                         <label for="new_full_name" class="control-label "><?php eT("Full name:");?></label>
                         <div class="">
-                            <input type='text' class="text input-sm form-control" id='new_full_name' name='new_full_name' required />
+                            <input type='text' class="text input-sm form-control" maxlength='50' id='new_full_name' name='new_full_name' required />
                         </div>
                     </div>
                     <div class="form-group">

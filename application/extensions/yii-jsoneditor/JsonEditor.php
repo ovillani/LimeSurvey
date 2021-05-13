@@ -47,8 +47,15 @@
 		{
 			$htmlOptions = $this->htmlOptions;
             list($name, $id) = $this->resolveNameID();
-			echo CHtml::tag('div', $htmlOptions, CHtml::textArea($name, $this->value, array(
-				'id' => $id
+			$value = $this->value;
+			// not a json, encoding
+			if (!isJson($this->value)) {
+				$value = json_encode($this->value);
+			}
+
+			echo CHtml::tag('div', $htmlOptions, CHtml::textArea($name, $value, array(
+				'id' => $id,
+                'encode' => false,
 			)));
 			$config = json_encode($this->editorOptions);
             App()->getClientScript()->registerScript("initJsonEditor" . $id, "$('#{$id}').jsonEditor($config);", CClientScript::POS_READY);
